@@ -15,6 +15,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            //para visualizar
             ElevatedButton(onPressed: (){
               tasksReference.get().then((QuerySnapshot value){
                 // QuerySnapshot collection = value;
@@ -28,18 +29,42 @@ class HomePage extends StatelessWidget {
             },
                 child: Text("obtener data"),
             ),
-
+            // para agregar
             ElevatedButton(onPressed: (){
               tasksReference.add({
-                "title": "dormir",
-                "description":"Para recuperar fuerzas",
+                "title": "dormir mas",
+                "description":"Para recuperar mas fuerzas",
                 "status": false,
               },
               ).then((value){
                 print(value);
+
+              }).catchError((e){
+                print("Ocurrio un error en el registro");
+              }).whenComplete((){
+                print("Se completó el Registro");
               });
             },
                 child: Text("agregar"),
+            ),
+            // para actualizar un documento
+            ElevatedButton(onPressed: (){
+              tasksReference
+                  .doc("kqoQyM7vScLKU9MJVozU")
+                  .update({
+                    "title": "amor",
+                    "description":"Por la programción",
+                    "status": false,
+                  })
+                  .catchError(
+                  (e){
+                      print(e);
+                  },
+              ).whenComplete((){
+                print("Actualización completada");
+              });
+            },
+                child: Text("actualizar"),
             ),
           ],
         ),
