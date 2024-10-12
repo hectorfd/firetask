@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firetask/models/task_model.dart';
 import 'package:firetask/ui/general/colors.dart';
 import 'package:firetask/ui/widgets/general_widgets.dart';
 import 'package:firetask/ui/widgets/item_task_widget.dart';
@@ -94,7 +95,28 @@ class HomePage extends StatelessWidget {
                     color: primary.withOpacity(0.85)
                 ),
                 ),
-                ItemTaskWidget(),
+                StreamBuilder(
+                    stream: tasksReference.snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot snap){
+                      if(snap.hasData){
+                        List<TaskModel> tasks = [];
+                        QuerySnapshot collection = snap.data;
+                        collection.docs.forEach((element){
+                          Map<String, dynamic> myMap = element.data() as Map <String, dynamic>;
+                          tasks.add(TaskModel.fromJson(myMap));
+                        });
+                        return ListView.builder(
+                            itemCount: tasks.length,
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            itemBuilder: (BuildContext context, int index){
+                              return ItemTaskWidget(taskModel: tasks[index],);
+                            }
+                        );
+                      }
+                      return loadingWidget();
+                    },
+                ),
               ],
             ),
           ),

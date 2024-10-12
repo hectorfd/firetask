@@ -1,4 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import '../general/colors.dart';
 
 Widget caja3() => const SizedBox(height: 3);
 Widget caja6() => const SizedBox(height: 6);
@@ -12,3 +15,15 @@ Widget cajaWith6() => const SizedBox(height: 6);
 Widget cajaWith10() => const SizedBox(height: 10);
 Widget cajaWith20() => const SizedBox(height: 20);
 Widget cajaWith40() => const SizedBox(height: 40);
+
+
+Widget loadingWidget()=>Center(
+  child: SizedBox(
+    height: 20,
+    width: 20,
+    child: CircularProgressIndicator(
+      color: primary,
+      strokeWidth: 2.2,
+    ),
+  ),
+);
