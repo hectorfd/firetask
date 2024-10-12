@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firetask/ui/general/colors.dart';
 import 'package:firetask/ui/widgets/general_widgets.dart';
+import 'package:firetask/ui/widgets/item_task_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../ui/widgets/textfield_search_widget.dart';
@@ -37,9 +38,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-      // appBar: AppBar(
-      //   title: Text("Home Page"),
-      // ),
+
       body: SingleChildScrollView(
         child: Column(children: [
           Container(
@@ -95,64 +94,7 @@ class HomePage extends StatelessWidget {
                     color: primary.withOpacity(0.85)
                 ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        offset: const Offset(4, 4),
-                        blurRadius: 12
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-
-                        decoration: BoxDecoration(
-                            color: Color(0xff6F42C1),
-                          borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text("Personal",
-                            style: TextStyle(
-                            fontSize:12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          ),
-                        ),
-                        caja3(),
-                        Text("tantas graecis class sanctus epicuri",
-                        style: TextStyle(
-                            fontSize:15,
-                            fontWeight: FontWeight.w600,
-                            color: primary.withOpacity(0.85),
-                        ),
-                      ),
-                      Text("aptent dissentiunt magna finibus putent potenti blandit utroque feugait aliquip",
-                        style: TextStyle(
-                        fontSize:14,
-                        fontWeight: FontWeight.w500,
-                        color: primary.withOpacity(0.75),
-                      ),
-                      ),
-                      caja6(),
-                      Text("10/12/2024",
-                        style: TextStyle(
-                        fontSize:12,
-                        fontWeight: FontWeight.w600,
-                        color: primary.withOpacity(0.75),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ItemTaskWidget(),
               ],
             ),
           ),
