@@ -66,6 +66,39 @@ class HomePage extends StatelessWidget {
             },
                 child: Text("actualizar"),
             ),
+
+            // para eliminar un documento
+            ElevatedButton(onPressed: (){
+              tasksReference
+                  .doc("kqoQyM7vScLKU9MJVozU")
+                  .delete()
+                  .catchError(
+                    (e){
+                  print(e);
+                },
+              ).whenComplete((){
+                print("Eliminación completada");
+              });
+            },
+              child: Text("Eliminar"),
+            ),
+
+            // boton personalizado
+            ElevatedButton(onPressed: (){
+              tasksReference
+                  .doc("t0001").set({
+                    "title": "ayudar a tablechi",
+                    "description":"Po que ta triste",
+                    "status": false,
+                  }).catchError((e){
+                    print(e);
+              }).whenComplete((){
+                print("creacion personalizada completada");
+              });
+
+            },
+              child: Text("creacion personalizada"),
+            ),
           ],
         ),
       ),
