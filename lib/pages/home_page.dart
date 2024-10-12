@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
                 "status": false,
               },
               ).then((value){
-
+                print(value);
               });
             },
                 child: Text("agregar"),
