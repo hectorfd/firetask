@@ -1,16 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firetask/models/task_model.dart';
 import 'package:firetask/ui/general/colors.dart';
+import 'package:firetask/ui/widgets/button_normal_widget.dart';
 import 'package:firetask/ui/widgets/general_widgets.dart';
 import 'package:firetask/ui/widgets/item_task_widget.dart';
+import 'package:firetask/ui/widgets/task_form_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../ui/widgets/textfield_search_widget.dart';
+import '../ui/widgets/textfield_normal_widget.dart';
 
 class HomePage extends StatelessWidget {
 
+
+  final TextEditingController _searchController = TextEditingController();
+
   CollectionReference tasksReference = FirebaseFirestore.instance.collection("tasks");
   // colecciones de firebase aqui...
+
+  showTaskForm(BuildContext context){
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context){
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: TaskFormWidget(),
+          );
+        },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +38,7 @@ class HomePage extends StatelessWidget {
       backgroundColor: secondary,
       floatingActionButton: InkWell(
         onTap: (){
-
+          showTaskForm(context);
         },
         borderRadius: BorderRadius.circular(14),
         child: Container(
@@ -78,7 +97,12 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   caja10(),
-                  TextfieldSearchWidget(),
+                  TextfieldNormalWidget(
+                    controller: _searchController,
+                    hintText: "Buscar tarea...",
+                    icon: Icons.search,
+
+                  ),
                 ],
               ),
             ),
@@ -95,6 +119,7 @@ class HomePage extends StatelessWidget {
                     color: primary.withOpacity(0.85)
                 ),
                 ),
+
                 StreamBuilder(
                     stream: tasksReference.snapshots(),
                     builder: (BuildContext context, AsyncSnapshot snap){
@@ -124,24 +149,7 @@ class HomePage extends StatelessWidget {
 
       ),
       ),
-      // body: StreamBuilder(stream: tasksReference.snapshots(),
-      //     builder: (BuildContext context, AsyncSnapshot snap){
-      //   if(snap.hasData){
-      //     QuerySnapshot collection = snap.data;
-      //     List<QueryDocumentSnapshot> docs = collection.docs;
-      //     List<Map<String, dynamic>> docsMap = docs.map((e)=>e.data() as Map<String, dynamic>).toList();
-      //     return ListView.builder(
-      //         itemCount: docsMap.length,
-      //         itemBuilder: (BuildContext context, int index){
-      //           return ListTile(
-      //           title:  Text(docsMap[index]["title"]),
-      //           );
-      //         }
-      //     );
-      //   }
-      //       return Center(child: CircularProgressIndicator(),);
-      //     },
-      // ),
+      
     );
   }
 }
