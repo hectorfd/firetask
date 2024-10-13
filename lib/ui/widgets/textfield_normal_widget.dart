@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../general/colors.dart';
 
-class TextfieldSearchWidget extends StatelessWidget {
-  const TextfieldSearchWidget({super.key});
+class TextfieldNormalWidget extends StatelessWidget {
+  
 
   @override
   Widget build(BuildContext context) {
