@@ -27,3 +27,33 @@ Widget loadingWidget()=>Center(
     ),
   ),
 );
+
+showSnackBarSuccess(BuildContext currentContext, String text){
+  ScaffoldMessenger.of(currentContext).showSnackBar(
+            SnackBar(
+              backgroundColor: Color(0xFF17c3b2),
+              content: Row(
+                children: [
+                  Icon(Icons.check, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text(text),
+                ],
+              ),
+            ),
+          );
+}
+
+showSnackBarError(BuildContext currentContext, String text){
+  ScaffoldMessenger.of(currentContext).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.redAccent,
+              content: Row(
+                children: [
+                  Icon(Icons.warning_amber, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text(text),
+                ],
+              ),
+            ),
+          );
+}

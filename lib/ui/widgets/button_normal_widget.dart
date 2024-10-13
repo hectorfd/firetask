@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../general/colors.dart';
 
 class ButtonNormalWidget extends StatelessWidget {
- 
- Function onPressed;
 
- ButtonNormalWidget({required this.onPressed});
+  Function onPressed;
+
+  ButtonNormalWidget({required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

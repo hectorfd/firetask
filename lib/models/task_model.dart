@@ -21,6 +21,12 @@ class TaskModel{
       status: json["status"],
   );
 
-
+  Map<String, dynamic> toJson()=>{
+      "title":title,
+      "description":description,
+      "date": date,
+      "category":category,
+      "status":status,
+  };
 
 }

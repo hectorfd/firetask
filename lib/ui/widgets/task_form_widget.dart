@@ -1,3 +1,5 @@
+import 'package:firetask/models/task_model.dart';
+import 'package:firetask/services/my_service_firestore.dart';
 import 'package:firetask/ui/widgets/textfield_normal_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -6,14 +8,13 @@ import 'button_normal_widget.dart';
 import 'general_widgets.dart';
 
 class TaskFormWidget extends StatefulWidget {
-  
   @override
   State<TaskFormWidget> createState() => _TaskFormWidgetState();
 }
 
 class _TaskFormWidgetState extends State<TaskFormWidget> {
-
   final formKey = GlobalKey<FormState>();
+  MyServiceFirestore taskService = MyServiceFirestore(collection: "tasks");
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -21,7 +22,7 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
 
   String categorySelected = "Personal";
 
-  showSelecDate() async{
+  showSelecDate() async {
     DateTime? datetime = await showDatePicker(
       context: context, 
       initialDate: DateTime.now(),
@@ -30,7 +31,7 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
       cancelText: "Cancelar",
       confirmText: "Aceptar",
       helpText: "Seleccionar fecha",
-      builder: (BuildContext context, Widget? widget){
+      builder: (BuildContext context, Widget? widget) {
         return Theme(
           data: ThemeData.light().copyWith(
             dialogBackgroundColor: Colors.white,
@@ -39,21 +40,54 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
               backgroundColor: secondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
-              )
+              ),
             ),
             colorScheme: ColorScheme.light(
               primary: primary,
             ),
           ), 
-          child: widget!);
+          child: widget!,
+        );
       }
+    );
+    
+    if(datetime != null) {
+      _dateController.text = datetime.toString().substring(0,10);
+      setState(() {});
+    }
+  }
+
+  registerTask() {
+    if (formKey.currentState!.validate()) {
+      TaskModel taskModel = TaskModel(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        date: _dateController.text,
+        category: categorySelected,
+        status: true,
       );
-      if(datetime != null){
-        _dateController.text = datetime.toString().substring(0,10);
-        setState(() {
+
+      final BuildContext currentContext = context;
+
+      taskService.addTask(taskModel).then((value) {
+        if (value.isNotEmpty) {
           
-        });
-      }
+          Navigator.pop(currentContext);
+          
+
+          _titleController.clear();
+          _descriptionController.clear();
+          _dateController.clear();
+
+          showSnackBarSuccess(currentContext, "La tarea a sido registrada con exíto");
+          
+        }
+      }).catchError((e) {
+        print(e);
+        showSnackBarError(currentContext, "error intentelo de nuevo");
+        Navigator.pop(currentContext);
+      });
+    }
   }
 
   @override
@@ -66,7 +100,7 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
           bottomLeft: Radius.circular(22),
         ),
       ),
-      padding:const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       child: Form(
         key: formKey,
         child: Column(
@@ -103,13 +137,11 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
                   selectedColor: categoryColor[categorySelected],
                   checkmarkColor: Colors.white,
                   labelStyle: TextStyle(
-                    color: categorySelected == "Personal"? Colors.white : primary,
+                    color: categorySelected == "Personal" ? Colors.white : primary,
                   ),
-        
-                  onSelected: (bool value){
-                    categorySelected = "Personal";
+                  onSelected: (bool value) {
                     setState(() {
-                      
+                      categorySelected = "Personal";
                     });
                   },
                 ),
@@ -120,13 +152,11 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
                   selectedColor: categoryColor[categorySelected],
                   checkmarkColor: Colors.white,
                   labelStyle: TextStyle(
-                    color: categorySelected == "Trabajo"? Colors.white : primary,
+                    color: categorySelected == "Trabajo" ? Colors.white : primary,
                   ),
-        
-                  onSelected: (bool value){
-                    categorySelected = "Trabajo";
+                  onSelected: (bool value) {
                     setState(() {
-                      
+                      categorySelected = "Trabajo";
                     });
                   },
                 ),
@@ -137,37 +167,27 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
                   selectedColor: categoryColor[categorySelected],
                   checkmarkColor: Colors.white,
                   labelStyle: TextStyle(
-                    color: categorySelected == "Otro"? Colors.white : primary,
+                    color: categorySelected == "Otro" ? Colors.white : primary,
                   ),
-        
-                  onSelected: (bool value){
-                    categorySelected = "Otro";
+                  onSelected: (bool value) {
                     setState(() {
-                      
+                      categorySelected = "Otro";
                     });
                   },
                 ),
-                
-        
-        
               ],
-        
             ),
-        
             caja10(),
             TextfieldNormalWidget(
-                hintText: "Fecha",
-                icon: Icons.date_range,
-                onTap: (){
-                  showSelecDate();
-                },
-                controller: _dateController,
+              hintText: "Fecha",
+              icon: Icons.date_range,
+              onTap: () {
+                showSelecDate();
+              },
+              controller: _dateController,
             ),
-            
-            ButtonNormalWidget(onPressed: (){
-              if(formKey.currentState!.validate()){
-
-              }
+            ButtonNormalWidget(onPressed: () {
+              registerTask();
             }),
           ],
         ),
