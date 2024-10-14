@@ -1,32 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firetask/models/task_model.dart';
+import 'package:firetask/models/user_model.dart';
+
 
 class MyServiceFirestore {
-  
+  String collection;
 
-  final CollectionReference collection;
+  MyServiceFirestore({required this.collection});
 
-  MyServiceFirestore({required String collection})
-      : collection = FirebaseFirestore.instance.collection(collection);
+  late final CollectionReference _collectionReference =
+      FirebaseFirestore.instance.collection(collection);
 
-  Future<String> addTask(TaskModel taskModel) async {
-    try {
-      final newDocument = collection.doc(); 
-      await newDocument.set(taskModel.toJson());
-      return newDocument.id; 
-    } catch (e) {
-      throw Exception('Error al agregar la tarea: $e'); 
-    }
+  Future<String> addTask(TaskModel model) async {
+    DocumentReference documentReference =
+        await _collectionReference.add(model.toJson());
+    String id = documentReference.id;
+    return id;
   }
 
   Future<void> finishedTask(String taskId) async {
-    try {
-      await collection.doc(taskId).update({
-        "status": false
-      });
-    } catch (e) {
-      throw Exception('Error al marcar la tarea como finalizada: $e');
-    }
+    await _collectionReference.doc(taskId).update(
+      {
+        "status": false,
+      },
+    );
   }
-}
 
+  Future<String> addUser(UserModel userModel) async{
+    DocumentReference documentReference =  await _collectionReference.add(userModel.toJson());
+    return documentReference.id;
+  }
+  
+  Future<bool> existUser(String email) async {
+    QuerySnapshot collection = await _collectionReference.where("email", isEqualTo: email).get();
+    if(collection.docs.isNotEmpty){
+      return true;
+    }
+    return false;
+  }
+
+
+}
