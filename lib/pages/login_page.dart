@@ -85,37 +85,61 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
+  
+_loginWithFacebook() async {
+  LoginResult _loginResult = await FacebookAuth.instance.login(
+    loginBehavior: LoginBehavior.webOnly, 
+    permissions: ['email', 'public_profile'], 
+  );
 
-  _loginWithFacebook() async {
-    LoginResult _loginResult = await FacebookAuth.instance.login();
-    if(_loginResult.status == LoginStatus.success){
-      Map<String, dynamic> userData = await FacebookAuth.instance.getUserData();
-      AccessToken accessToken = _loginResult.accessToken!;
-      OAuthCredential credential = FacebookAuthProvider.credential(accessToken.tokenString);
+  if (_loginResult.status == LoginStatus.success) {
+    print("Login con Facebook exitoso");
+    Map<String, dynamic> userData = await FacebookAuth.instance.getUserData();
+    print("Datos del usuario de Facebook: $userData");
+    AccessToken accessToken = _loginResult.accessToken!;
+    print("AccessToken de Facebook: ${accessToken.tokenString}");
+    OAuthCredential credential = FacebookAuthProvider.credential(accessToken.tokenString);
+    print("Credenciales generadas para Firebase: $credential");
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    
+    if (userCredential.user != null) {
+      print("Usuario autenticado en Firebase: ${userCredential.user!.email}");
+      UserModel userModel = UserModel(
+        fullName: userCredential.user!.displayName!,
+        email: userCredential.user!.email!,
+      );
 
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      if (userCredential.user != null) {
 
-        UserModel userModel = UserModel(
-          fullName: userCredential.user!.displayName!,
-          email: userCredential.user!.email!,
-        );
-
-        userService.existUser(userCredential.user!.email!).then((value){
-          if(!value){
-            userService.addUser(userModel).then((value) {
-              if(value.isNotEmpty){
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> HomePage()), (route) => false);
-              }
-            });
-          }else{
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> HomePage()), (route) => false);
-          }
-        });
-      }
-
+      userService.existUser(userCredential.user!.email!).then((value) {
+        if (!value) {
+          userService.addUser(userModel).then((value) {
+            if (value.isNotEmpty) {
+              print("Usuario agregado, redirigiendo a HomePage");
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+                (route) => false,
+              );
+            }
+          });
+        } else {
+          print("Usuario ya existe, redirigiendo a HomePage");
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+            (route) => false,
+          );
+        }
+      });
+    } else {
+      print("Error: userCredential.user es null");
     }
+  } else {
+    print("Login fallido con Facebook: ${_loginResult.status}");
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
