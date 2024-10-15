@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firetask/models/task_model.dart';
+import 'package:firetask/pages/login_page.dart';
 import 'package:firetask/ui/general/colors.dart';
 import 'package:firetask/ui/widgets/button_normal_widget.dart';
 import 'package:firetask/ui/widgets/general_widgets.dart';
@@ -7,6 +9,8 @@ import 'package:firetask/ui/widgets/item_task_widget.dart';
 import 'package:firetask/ui/widgets/task_form_widget.dart';
 import 'package:firetask/utils/task_search_delegate.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../ui/widgets/textfield_normal_widget.dart';
 
@@ -16,7 +20,8 @@ class HomePage extends StatelessWidget {
   final TextEditingController _searchController = TextEditingController();
 
   CollectionReference tasksReference = FirebaseFirestore.instance.collection("tasks");
-  // colecciones de firebase aqui...
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   showTaskForm(BuildContext context){
     showModalBottomSheet(
@@ -90,14 +95,29 @@ class HomePage extends StatelessWidget {
                       color: primary,
                     ),
                   ),
-                  Text("Mis Tareas",
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w600,
-                      color: primary,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Mis Tareas",
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w600,
+                          color: primary,
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            FacebookAuth.instance.logOut();
+                            _googleSignIn.signOut();
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                          },
+                          icon: Icon(Icons.exit_to_app, color: primary),
+                        ),
+                    ],
                   ),
+                  
                   caja10(),
+                  
                   TextfieldNormalWidget(
                       controller: _searchController,
                       icon: Icons.search,
@@ -126,34 +146,32 @@ class HomePage extends StatelessWidget {
                 ),
 
                 StreamBuilder(
-                    stream: tasksReference.snapshots(),
-                    builder: (BuildContext context, AsyncSnapshot snap){
-                      if(snap.hasData){
-                        List<TaskModel> tasks = [];
-                        QuerySnapshot collection = snap.data;
-                        // collection.docs.forEach((element){
-                        //   Map<String, dynamic> myMap = element.data() as Map<String, dynamic>;
-                        //   tasks.add(TaskModel.fromJson(myMap));
-                        // });
-                        tasks = collection.docs.map((e){
-                          TaskModel task = TaskModel.fromJson(e.data() as Map<String, dynamic>);
-                          task.id = e.id;
-                          return task;
-                        }).toList();
-                        tasksGeneral.clear();
-                        tasksGeneral = tasks;
+                  stream: tasksReference.where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot snap) {
+                    if (snap.hasData) {
+                      List<TaskModel> tasks = [];
+                      QuerySnapshot collection = snap.data;
 
-                        return ListView.builder(
-                            itemCount: tasks.length,
-                            shrinkWrap: true,
-                            physics: const ScrollPhysics(),
-                            itemBuilder: (BuildContext context, int index){
-                              return ItemTaskWidget(taskModel: tasks[index],);
-                            }
-                        );
-                      }
-                      return loadingWidget();
-                    },
+                      tasks = collection.docs.map((e) {
+                        TaskModel task = TaskModel.fromJson(e.data() as Map<String, dynamic>);
+                        task.id = e.id;
+                        return task;
+                      }).toList();
+
+                      tasksGeneral.clear();
+                      tasksGeneral = tasks;
+
+                      return ListView.builder(
+                        itemCount: tasks.length,
+                        shrinkWrap: true,
+                        physics: const ScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return ItemTaskWidget(taskModel: tasks[index]);
+                        },
+                      );
+                    }
+                    return loadingWidget();
+                  },
                 ),
               ],
             ),

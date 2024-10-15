@@ -70,6 +70,17 @@ class _RegisterPageState extends State<RegisterPage> {
             key: keyForm,
             child: Column(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () {
+                        Navigator.pop(context); 
+                      },
+                    ),
+                  ],
+                ),
                 caja30(),
                 SvgPicture.asset(
                   'assets/images/register.svg',

@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Aún no estás registrado?",
+                      "Aún no estás registrado? ",
                     ),
                     cajaWith10(),
                     InkWell(
@@ -199,6 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                             MaterialPageRoute(
                                 builder: (context) => RegisterPage()));
                       },
+                      
                       child: Text(
                         "Regístrate",
                         style: TextStyle(

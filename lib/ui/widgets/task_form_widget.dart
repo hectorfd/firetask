@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firetask/models/task_model.dart';
 import 'package:firetask/services/my_service_firestore.dart';
 import 'package:firetask/ui/widgets/textfield_normal_widget.dart';
@@ -69,26 +70,28 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
 
       final BuildContext currentContext = context;
 
-      taskService.addTask(taskModel).then((value) {
+
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+
+
+      taskService.addTask(taskModel, userId).then((value) {
         if (value.isNotEmpty) {
-          
           Navigator.pop(currentContext);
-          
 
           _titleController.clear();
           _descriptionController.clear();
           _dateController.clear();
 
-          showSnackBarSuccess(currentContext, "La tarea a sido registrada con exíto");
-          
+          showSnackBarSuccess(currentContext, "La tarea ha sido registrada con éxito");
         }
       }).catchError((e) {
         print(e);
-        showSnackBarError(currentContext, "error intentelo de nuevo");
+        showSnackBarError(currentContext, "Error, inténtelo de nuevo");
         Navigator.pop(currentContext);
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -11,12 +11,16 @@ class MyServiceFirestore {
   late final CollectionReference _collectionReference =
       FirebaseFirestore.instance.collection(collection);
 
-  Future<String> addTask(TaskModel model) async {
-    DocumentReference documentReference =
-        await _collectionReference.add(model.toJson());
-    String id = documentReference.id;
-    return id;
-  }
+  Future<String> addTask(TaskModel model, String userId) async {
+  DocumentReference documentReference =
+      await _collectionReference.add({
+        ...model.toJson(), 
+        'userId': userId 
+      });
+  String id = documentReference.id;
+  return id;
+}
+
 
   Future<void> finishedTask(String taskId) async {
     await _collectionReference.doc(taskId).update(
